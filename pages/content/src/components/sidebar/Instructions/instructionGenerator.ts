@@ -116,10 +116,6 @@ Plan ahead before sending the function call.
     instructions += '\n</custom_instructions>\n\n';
   }
 
-  instructions += '\n\n';
-  instructions += 'Please retry with the correct xml codeblock formatting:\n\n';
-  instructions += '```xml\n<function_calls>\n…\n</function_calls>\n```\n\n';
-
   instructions += '\n\n---\n\nThis section delimits the system prompt from the user prompt.\n\n---\n\n';
   
   return instructions;
