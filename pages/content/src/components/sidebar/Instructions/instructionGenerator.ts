@@ -1,5 +1,4 @@
 // pages/content/src/utils/instructionGenerator.ts
-import { jsonSchemaToCsn } from './schema_converter';
 import { chatgptInstructions } from './website_specific_instruction/chatgpt';
 import { geminiInstructions } from './website_specific_instruction/gemini';
 
@@ -19,39 +18,31 @@ export const generateInstructions = (
     return '# Tools unavailable\n\nConnect to the MCP server then retry.';
   }
 
-  let instructions = `[Start Fresh Session from here][IMPORTANT]
+  let instructions = `### System Prompt: Tool Invocation Protocol
 
-<SYSTEM>
-You are SuperAssistant, a knowledgeable assistant with function-calling capabilities.
+1. Structure Definition
+*   1.1. Enclose the output in one \`xml\` codeblock.
+*   1.2. Nest one \`<function_calls>\` block within the \`xml\` codeblock.
+*   1.3. Nest one \`<invoke>\` tag within the \`<function_calls>\` block.
+*   1.4. Nest one \`<parameter>\` tag per required argument within the \`<invoke>\` tag.
 
-### System Prompt: Tool Invocation Protocol
+2. Attribute Assignment
+*   2.1. Set the \`name\` attribute of the \`<invoke>\` tag to the function's name.
+*   2.2. Set the \`call_id\` attribute of the \`<invoke>\` tag to an incrementing integer, starting at 1.
+*   2.3. Set the \`name\` attribute of each \`<parameter>\` tag to the argument's name.
 
-**1. Structure Definition**
-*   **1.1.** Enclose the output in one \`xml\` codeblock.
-*   **1.2.** Nest one \`<function_calls>\` block within the \`xml\` codeblock.
-*   **1.3.** Nest one \`<invoke>\` tag within the \`<function_calls>\` block.
-*   **1.4.** Nest one \`<parameter>\` tag per required argument within the \`<invoke>\` tag.
-
-**2. Attribute Assignment**
-*   **2.1.** Set the \`name\` attribute of the \`<invoke>\` tag to the function's name.
-*   **2.2.** Set the \`call_id\` attribute of the \`<invoke>\` tag to an incrementing integer, starting at 1.
-*   **2.3.** Set the \`name\` attribute of each \`<parameter>\` tag to the argument's name.
-
-**3. Value Formatting**
-*   **3.1.** Write each argument's value between its \`<parameter>\` tags.
-*   **3.2.** Write string and scalar values as-is.
-*   **3.3.** Format list and object values as JSON strings.
+3. Value Formatting
+*   3.1. Write each argument's value between its \`<parameter>\` tags.
+*   3.2. Write string and scalar values as-is.
+*   3.3. Format list and object values as JSON strings.
 
 ### Output Format
-When invoking a function, provide your reasoning, followed by the function call.
+Plan ahead before sending the function call.
 
-## Thoughts
-  - User Query Elaboration: ...
-  - Thoughts: ...
-  - Observations: ...
-  - Solutions: ...
-  - Function to be used: ...
-  - call_id: ...
+## Function Calls
+- Reasoning: [Which functions could solve your problems?]
+- function_name: […]
+- call_id: […]
 
 \`\`\`xml
 <function_calls>
@@ -125,13 +116,10 @@ When invoking a function, provide your reasoning, followed by the function call.
     instructions += '\n</custom_instructions>\n\n';
   }
 
-  instructions += '<\\SYSTEM>';
-
   instructions += '\n\n';
   instructions += 'Please retry with the correct xml codeblock formatting:\n\n';
   instructions += '```xml\n<function_calls>\n...\n</function_calls>\n```\n\n';
 
-  instructions += '\n\n';
   instructions += '\n\n---\n\nThis section delimits the system prompt from the user prompt.\n\n---\n\n';
   instructions += '\n\n\n\n';
   
